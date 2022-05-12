@@ -11,22 +11,22 @@ import javax.servlet.http.HttpServletResponse;
 public class TestController {
 
     @GetMapping("/request")
-    public String getRequest(HttpServletRequest request) {
+    public String request(HttpServletRequest request) {
         return "Request";
     }
 
     @GetMapping("/response")
-    public String getResponse(HttpServletResponse response) {
+    public String response(HttpServletResponse response) {
         return "Response";
     }
 
     @GetMapping("/exc")
-    public void getException(@RequestParam(defaultValue = "default") String str) {
+    public void exception(@RequestParam(defaultValue = "default") String str) {
         throw new IllegalArgumentException("Something went wrong");
     }
 
     @GetMapping("/nothing")
-    public void doNothing() {
+    public void nothing() {
 
     }
 

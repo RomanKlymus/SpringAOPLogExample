@@ -21,20 +21,16 @@ public class LogAspect {
 
     Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Pointcut("within(@org.springframework.web.bind.annotation.RestController *)")
+    @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
     public void controller() {
     }
 
-    @Pointcut("execution(* *.*(..))")
-    public void allMethod() {
-    }
-
-    @Before("controller() && allMethod() && args(..,request)")
+    @Before("controller() && args(..,request)")
     public void logBefore(JoinPoint joinPoint, HttpServletRequest request) {
+        log.info("=== LOG START ===");
         log.info("Entering in Method :  " + joinPoint.getSignature().getName());
         log.info("Class Name :  " + joinPoint.getSignature().getDeclaringTypeName());
         log.info("Arguments :  " + Arrays.toString(joinPoint.getArgs()));
-        log.info("Target class : " + joinPoint.getTarget().getClass().getName());
 
         if (null != request) {
             log.info("Start Header Section of request ");
@@ -48,15 +44,14 @@ public class LogAspect {
             log.info("Request Path info :" + request.getServletPath());
             log.info("End Header Section of request ");
         }
-
     }
 
-    @After("controller() && allMethod() && args(..,response)")
+    @After("controller() && args(..,response)")
     public void logAfter(JoinPoint joinPoint, HttpServletResponse response) {
+        log.info("=== LOG START ===");
         log.info("Entering in Method :  " + joinPoint.getSignature().getName());
         log.info("Class Name :  " + joinPoint.getSignature().getDeclaringTypeName());
         log.info("Arguments :  " + Arrays.toString(joinPoint.getArgs()));
-        log.info("Target class : " + joinPoint.getTarget().getClass().getName());
 
         if (null != response) {
             response.setHeader(HttpHeaders.SET_COOKIE, "Delicious cookie");
@@ -71,20 +66,23 @@ public class LogAspect {
         }
     }
 
-    @AfterReturning(pointcut = "controller() && allMethod()", returning = "result")
+    @AfterReturning(pointcut = "controller()", returning = "result")
     public void logAfter(JoinPoint joinPoint, Object result) {
+        log.info("=== LOG START ===");
         String returnValue = this.getValue(result);
         log.info("Method Return value : " + returnValue);
     }
 
-    @AfterThrowing(pointcut = "controller() && allMethod()", throwing = "exception")
+    @AfterThrowing(pointcut = "controller()", throwing = "exception")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable exception) {
+        log.info("=== LOG START ===");
         log.error("An exception has been thrown in " + joinPoint.getSignature().getName() + " ()");
         log.error("Cause : " + exception.getCause());
     }
 
-    @Around("controller() && allMethod()")
+    @Around("controller()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
+        log.info("=== LOG START ===");
         long start = System.currentTimeMillis();
         try {
             String className = joinPoint.getSignature().getDeclaringTypeName();
@@ -96,7 +94,7 @@ public class LogAspect {
 
             return result;
         } catch (IllegalArgumentException e) {
-            log.error("Illegal argument " + Arrays.toString(joinPoint.getArgs()) + " in "
+            log.info("Illegal argument " + Arrays.toString(joinPoint.getArgs()) + " in "
                     + joinPoint.getSignature().getName() + "()");
             throw e;
         }
